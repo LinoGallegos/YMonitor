@@ -1,0 +1,323 @@
+﻿@{
+    ViewBag.Title = "VER INFORMACION";
+    string tabla;
+}
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Web;
+@using System.Web.UI;
+@using System.Web.UI.WebControls;
+@using System.Data;
+@using System.Text;
+@using System.Data.SqlClient;
+
+@{
+    string fillgrid()
+    {
+
+        SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder();
+        DateTime fechaActual = DateTime.Today;
+
+        string query = " SELECT distinct  "
++ " ref.sReferencia [REFERENCIA YARZA], "
++ "SIR.ObtieneValorCaracteristica('REFERENCIA CLIENTE', 2600, Ref.nIdReferencia60) AS[REFERENCIA CLIENTE], "
++ "SIR.ObtieneValorCaracteristica('PLANTA QUE ADMINISTRA', 2600, Ref.nIdReferencia60) AS[PLANTA QUE ADMINISTRA], "
++ "tipot.sDescripcion[MODO], "
++ "STATU.sDescripcion[ESTATUS], "
++ "REF.dDoctosOK[RECEPCION DE DOCUMENTOS], "
++ "SIR.ObtieneValorCaracteristica('FECHA DE SALIDA DE ORIGEN', 2600, Ref.nIdReferencia60) AS[FECHA DE SALIDA DE ORIGEN], "
++ "trans.dFechaETA AS[ETA], "
++ "TRANS.dFechaLlegada AS[Transporte Fecha LLegada], "
++ "SIR.ObtieneValorCaracteristica('SERVICIO', 2600, Ref.nIdReferencia60) AS[SERVICIO], "
++ "Proveedores.sRazonSocial[CLIENTE_PROVEEDOR], "
++ "SIR.ObtieneValorCaracteristica('EMBARCADOR', 2600, Ref.nIdReferencia60) AS[EMBARCADOR], "
++ "proa.sRazonSocial[CONSIGNATARIO], "
++ "sir.FacturasPorReferencia(REF.nIdReferencia60)[FACTURA], "
++ "sir.ConcatenaPedidosPorReferencia(REF.nIdReferencia60) as [P.O NUMBER], "
++ "REF.sMercanciaDesc[TIPO DE MATERIAL], "
++ "umc.sDescripcion, "
++ "SIR.ObtieneValorCaracteristica('PLANTA QUE ADMINISTRA', 2600, Ref.nIdReferencia60) AS[DESTINO DE LA MERCANCIA], "
++ "ejecutivo.snombre + ' ' + Ejecutivo.sApellidoPaterno as [EJECUTIVO], "
++ "navi.sRazonSocial[NAVIERA], "
++ "transport.sidentificador[BUQUE], "
++ "SIR.ObtieneValorCaracteristica('FORWADER', 2600, Ref.nIdReferencia60) AS[FORWADER], "
++ "sir.concatenaguiasreferencia(ref.nidreferencia60) as  [BL / GUIAS], "
++ "REf.npesobruto[PESO BRUTO], "
++ "sumcon.Contenedores as  [CONTENEDORES], "
++ "sir.ConcatenaContenedorPorReferencia(ref.nIdReferencia60) AS[NUMERO DE CONTENEDOR], "
++ "SIR.ConcatenaValoresPorContenedor('TIPOS_CONTENEDOR', Ref.nIdReferencia60) AS[TIPO DE CONTENEDOR], "
++ "SIR.ObtieneValorCaracteristica('FECHA NOTIFICACION', 2600, Ref.nIdReferencia60) AS[FECHA NOTIFICACION], "
++ "SIR.ObtieneValorCaracteristica('TIPO DE PREVIO', 2600, Ref.nIdReferencia60) AS[PREVIO], "
++ "terminal.sRazonSocial[TERMINAL], "
++ "Pedimento.sPedimento[PEDIMENTO], "
++ "pedimento.dFechaPago[FEHCA DE PAGO PEDIMENTO], "
++ "REF.dFechaDespacho[FECHA DE PROGRAMACION DE DESPACHO], "
++ "case when ale.nPrimeraSel = 1 then 'VERDE' else case  when ale.nPrimeraSel = 2 then 'ROJO' else '' end end as[TIPO MOD], "
++ "ale.dFechaPrimSel[FECHA INICIO MOD], "
++ "ale.dFechaFinPrimSel[FECHA FIN MOD], "
++ "SIR.ObtieneValorCaracteristica('ENVIO DE DOCUMENTOS', 2600, Ref.nIdReferencia60) AS[ENVIO DE DOCUMENTOS], "
++ "SIR.ObtieneValorCaracteristica('FECHA DE ENTREGA PLANTA FINAL', 2600, Ref.nIdReferencia60) AS[FECHA DE ENTREGA PLANTA FINAL], "
++ "SIR.ObtieneValorCaracteristica('FECHA DE VACIO', 2600, Ref.nIdReferencia60) AS[FECHA DE VACIO], "
++ "SIR.ObtieneValorCaracteristica('ENVIO DE CUENTA DE GASTOS', 2600, Ref.nIdReferencia60) AS[ENVIO DE CUENTA DE GASTOS] "
++ "FROM "
++ "SIR.SIR_11_FACTURAS_PARTIDAS AS partidas LEFT OUTER JOIN "
++ "SIR.SIR_100_FAC_PART_AGRUPADAS as pargo on pargo.nIdFacPartAgrupada100 = partidas.nIdFacPartAgrupada100 left outer join "
++ "SIR.SIR_100_FAC_PART_AGRUPADAS AS PA ON Partidas.nIdFacPartAgrupada100 = PA.nIdFacPartAgrupada100 LEFT OUTER JOIN "
++ "SIR.SIR_01_PAISES AS ORIDEST ON Partidas.nIdPaisOrigen01 = ORIDEST.nIdPais01 LEFT OUTER JOIN "
++ "SIR.SIR_01_PAISES AS COMPVEND ON Partidas.nIdPaisVendedor01 = COMPVEND.nIdPais01 LEFT OUTER JOIN "
++ "SIR.SIR_52_FACTURAS AS F ON Partidas.nIdFactura52 = F.nIdFactura52 LEFT OUTER JOIN "
++ "SIR.SIR_03_MONEDAS AS Moneda ON F.nIdMoneda03 = Moneda.nIdMoneda03 LEFT OUTER JOIN "
++ "SIR.SIR_42_PROVEEDORES AS Proveedores ON F.nIdProveedor42 = Proveedores.nIdProveedor42 INNER JOIN "
++ "(SELECT R.nIdReferencia60, R.sReferencia, Operaciones.nOperacion, R.nIdPedimento149, Operaciones.nIdOperFact49, R.nIdSucPatAdu71, R.nIdSucPatAdu71 AS [Referencia IdSucPAtAduana], "
++ "R.nTipoOperacion AS TipoOperacion, R.nIdCliente AS [Referencia IdCliente], R.nIdImex AS [Referencia IdImpExp], Operaciones.dFecha, R.dFechaOperacion "
++ "FROM SIR.SIR_60_REFERENCIAS AS R INNER JOIN "
++ "SIR.SIR_49_OPERACIONES_FACTURAS AS Operaciones ON R.sReferencia = Operaciones.nOperacion) AS Operacion ON F.nIdOperFact49 = Operacion.nIdOperFact49 INNER JOIN "
++ "SIR.SIR_149_PEDIMENTO AS Pedimento ON Operacion.nIdPedimento149 = Pedimento.nIdPedimento149 INNER JOIN "
++ "SIR.SIR_60_REFERENCIAS AS REF ON REF.nIdPedimento149 = Pedimento.nIdPedimento149 INNER JOIN "
++ "Admin.PartiAgrupadas_Custom ON REF.sReferencia = Admin.PartiAgrupadas_Custom.Referencia LEFT OUTER JOIN "
++ "SIR.SIR_28_CLAVES_DOCTOS AS DOC ON REF.nIdClaveDocto28 = DOC.nIdClaveDocto28 LEFT OUTER JOIN "
++ "SIR.SIR_41_REG_TRANSPORTES AS REGTRAN WITH(NOLOCK) ON REF.nIdRegTrans41 = REGTRAN.nIdRegTrans41 LEFT OUTER JOIN "
++ "SIR.SIR_06_ADUANA_SEC AS ADUENTRADA WITH(NOLOCK) ON Pedimento.nIdAduSec06 = ADUENTRADA.nIdAduSec06 LEFT OUTER JOIN "
++ "SIR.SIR_71_SUCURSAL_PATENTE_ADUANA AS SPA WITH(NOLOCK) ON REF.nIdSucPatAdu71 = SPA.nIdSucPatAdu71 LEFT OUTER JOIN "
++ "SIR.SIR_06_ADUANA_SEC AS ADUDESPACHO WITH(NOLOCK) ON SPA.nIdAduSec06 = ADUDESPACHO.nIdAduSec06 LEFT OUTER JOIN "
++ "SIR.SIR_70_PATENTES AS Patente WITH(NOLOCK) ON SPA.nIdPatente70 = Patente.nIdPatente70 LEFT OUTER JOIN "
++ "SIR.SIR_99_PARTES AS Partes ON Partes.nIdParte99 = Partidas.nIdParte99 LEFT OUTER JOIN "
++ "Admin.ADMINC_07_CLIENTES on  Admin.ADMINC_07_CLIENTES.sRazonSocial = Admin.PartiAgrupadas_Custom.Cliente left outer join "
++ "sir.SIR_10_UNIDADES_MEDIDA as UMC on Partidas.nidumc10 = UMC.nIdUMed10  left outer join "
++ "sir.SIR_25_TIPOS_TRAFICO tipot on tipot.nIdTipoTrafico25 = ref.nIdTipoTrafico25 "
++ "inner join sir.SIR_73_STATUS_REFERENCIAS stat on stat.nIdStatus73 = ref.nIdStatus73 left outer join "
++ "sir.SIR_41_REG_TRANSPORTES trans on trans.nIdRegTrans41 = ref.nIdRegTrans41 left outer join "
++ "SIR.SIR_175_TRANSPORTES transport on transport.nIdTrans175 = trans.nIdTrans175 left join "
++ "admin.ADMINC_42_PROVEEDORES navi on navi.nIdProveedor42 = transport.nIdTransportista42 left outer join "
++ "Admin.ADMINA_02_PERSONAL Ejecutivo(NOLOCK) ON Ref.nIdEjecutivo02 = Ejecutivo.nIdPers02  left outer join "
++ "Admin.ADMINC_42_PROVEEDORES proa on proa.nIdProveedor42 = REF.nIdNaviera42 LEFT OUTER JOIN "
++ "Admin.ADMINC_42_PROVEEDORES terminal on terminal.nIdProveedor42 = trans.nIdTerminal42 LEFT OUTER JOIN "
++ "SIR.SIR_73_STATUS_REFERENCIAS STATU ON STATU.nIdStatus73 = REF.nIdStatus73 LEFT OUTER JOIN "
++ "SIR.SIR_79_REFERENCIAS_BLS REFBLS ON REFBLS.nIdReferencia60 = REF.nIdReferencia60 LEFT OUTER JOIN "
++ "SIR.SIR_74_CONOCIMIENTOS_MARITIMOS MAR ON MAR.nIdBL74 = REFBLS.nIdBL74 LEFT OUTER JOIN "
++ "SIR.SIR_76_CONTENEDORES CONTS ON CONTS.nIdReferencia60 = REF.nIdReferencia60 left outer join "
++ "SIR.SIR_09_TIPOS_CONTENEDOR tipoc on tipoc.nIdTipoCont09 = CONTS.nIdTipoCont09 left outer join "
++ "admin.SIR_VT_ContenedoresReferenciasPorEjecutivo sumcon on sumcon.Referencia = ref.sreferencia left outer join "
++ "SIR.SIR_67_MTRA_SELEC_ALEATORIA ale on ale.nIdMtraSelAle67 = REF.nIdMtraSelAle67 "
++ "where admin.ADMINC_07_CLIENTES.sClave = '47' and Pedimento.dFechaPago > '2019-07-01'";
+        //+ "where REF.sReferencia = 'TAI01390-19'";
+       // csb.DataSource = "localhost";
+        csb.DataSource = "192.168.254.5";
+        csb.InitialCatalog = "SIR";
+        csb.IntegratedSecurity = false;
+        csb.ConnectTimeout = 600;
+        csb.UserID = "GCIT";
+        csb.Password = "@#reporteador20";
+       // csb.UserID = "sa";
+       // csb.Password = "W1zard05";
+        DataTable qResult = new DataTable();
+        SqlConnection con = new SqlConnection(csb.ConnectionString);
+
+        SqlDataAdapter adapter = new SqlDataAdapter();
+        adapter.SelectCommand = new SqlCommand(query, con);
+        adapter.SelectCommand.CommandTimeout = 600;
+        qResult.Clear();
+        adapter.Fill(qResult);
+
+
+
+
+        StringBuilder sb = new StringBuilder();
+        //sb.Append("<table id=example2 class=" + '"' + "table table-bordered table-hover" + '"' + ">");
+        sb.Append("<thead>");
+        sb.Append("<tr>");
+        sb.Append("<th>REFERENCIA YARZA</th>");
+        sb.Append("<th>REFERENCIA CLIENTE</th>");
+        sb.Append("<th>PLANTA QUE ADMINISTRA</th>");
+        sb.Append("<th>MODO</th>");
+        sb.Append("<th>ESTATUS</th>");
+        sb.Append("<th>RECEPCION DE DOCUMENTOS</th>");
+        sb.Append("<th>FECHA DE SALIDA</th>");
+        sb.Append("<th>ETA</th>");
+        sb.Append("<th>TRANS FECHA LLEGADA</th>");
+        sb.Append("<th>SERVICIO</th>");
+        sb.Append("<th>CLIENTE_PROVEEDOR</th>");
+        sb.Append("<th>EMBARCADOR</th>");
+        sb.Append("<th>CONSIGNATARIO</th>");
+        sb.Append("<th>FACTURA</th>");
+        sb.Append("<th>PO NUMBER</th>");
+        sb.Append("<th>TIPO DE MATERIAL</th>");
+        sb.Append("<th>SDESCRIPCION</th>");
+        sb.Append("<th>DESTINO DE LA MERCANCIA</th>");
+        sb.Append("<th>EJECUTIVO</th>");
+        sb.Append("<th>NAVIERA</th>");
+        sb.Append("<th>BUQUE</th>");
+        sb.Append("<th>FORWARDER</th>");
+        sb.Append("<th>BL/GUIAS</th>");
+        sb.Append("<th>PESO BRUTO</th>");
+        sb.Append("<th>CONTENEDORES</th>");
+        sb.Append("<th>#CONTENEDOR</th>");
+        sb.Append("<th>TIPO DE CONTENEDOR</th>");
+        sb.Append("<th>FECHA NOTIFICACION</th>");
+        sb.Append("<th>PREVIO</th>");
+        sb.Append("<th>TERMINAL</th>");
+        sb.Append("<th>PEDIMENTO</th>");
+        sb.Append("<th>FECHA PAGO DE PEDIMENTO</th>");
+        sb.Append("<th>FECHA DE PROG DESPACHO</th>");
+        sb.Append("<th>TIPO MOD</th>");
+        sb.Append("<th>FECHA FIN MOD</th>");
+        sb.Append("<th>ENVIO DE DOCUMENTOS</th>");
+        sb.Append("<th>F.E. PLANTA FINAL</th>");
+        sb.Append("<th>FECHA DE VACIO</th>");
+        sb.Append("<th>ENVIO CUENTA_GASTOS</th>");
+        sb.Append("</tr>");
+        sb.Append("</thead>");
+        sb.Append("<tbody>");
+        foreach (DataRow dr in qResult.Rows)
+        {
+            string trafico = "null";
+            string cliente = "null";
+            string month = "null";
+            string year = "null";
+
+            foreach (DataColumn dc1 in qResult.Columns)
+            {
+                if (dc1.ColumnName == "CLIENTE")
+                {
+                    cliente = dr[dc1.ColumnName].ToString();
+                }
+                else
+                    if (dc1.ColumnName == "FECHA ENTRADA")
+                {
+                    year = dr[dc1.ColumnName].ToString();
+                    month = dr[dc1.ColumnName].ToString();
+                }
+                else
+                        if (dc1.ColumnName == "TRAFICO")
+                {
+                    trafico = dr[dc1.ColumnName].ToString();
+                }
+                else
+                            if (trafico != "null" && year != "null" && month != "null" && cliente != "null")
+
+                    goto here1;
+
+            }
+
+        here1:
+            sb.Append("<tr>");
+            foreach (DataColumn dc in qResult.Columns)
+            {
+                if (dc.ColumnName == "TRAFICO")
+                {
+                    string q = "\"";
+                    sb.Append("<td>");
+                    sb.Append("<form action='http://192.168.254.6/getfiles/' method='post'>");
+                    sb.Append("<input type ='hidden' name = 'dirurl' value = ' " + cliente + q + year + q + month + q + trafico + " '/>");
+                    sb.Append("<input type ='hidden' name = 'secret' value = 'xyz' />");
+                    // para la columna de trafico
+                    sb.Append("<button type='submit' class='btn btn-link' name='envio_prueba'>" + trafico + "</button>");
+                    //sb.Append("<a href='http://192.168.254.6/getfiles/' class='btn btn-link';>" + trafico +"</a>");
+                    /*
+                     * "R:\SirRecursos\ControlDocumentos\CLIENTE\AÑO-FECHA ENTRADA\MES-FECHA ENTRADA\TRAFICO"
+                      */
+                    sb.Append("</form>");
+                    sb.Append("</td>");
+                }
+                else
+                {
+                    sb.Append("<td>");
+                    sb.Append(dr[dc.ColumnName].ToString());
+                    sb.Append("</td>");
+                }
+            }
+
+
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody>");
+        sb.Append("<tfoot>");
+        sb.Append("<tr>");
+        sb.Append("<th>REFERENCIA YARZA</th>");
+        sb.Append("<th>REFERENCIA CLIENTE</th>");
+        sb.Append("<th>PLANTA QUE ADMINISTRA</th>");
+        sb.Append("<th>MODO</th>");
+        sb.Append("<th>ESTATUS</th>");
+        sb.Append("<th>RECEPCION DE DOCUMENTOS</th>");
+        sb.Append("<th>FECHA DE SALIDA</th>");
+        sb.Append("<th>ETA</th>");
+        sb.Append("<th>TRANS FECHA LLEGADA</th>");
+        sb.Append("<th>SERVICIO</th>");
+        sb.Append("<th>CLIENTE_PROVEEDOR</th>");
+        sb.Append("<th>EMBARCADOR</th>");
+        sb.Append("<th>CONSIGNATARIO</th>");
+        sb.Append("<th>FACTURA</th>");
+        sb.Append("<th>PO NUMBER</th>");
+        sb.Append("<th>TIPO DE MATERIAL</th>");
+        sb.Append("<th>SDESCRIPCION</th>");
+        sb.Append("<th>DESTINO DE LA MERCANCIA</th>");
+        sb.Append("<th>EJECUTIVO</th>");
+        sb.Append("<th>NAVIERA</th>");
+        sb.Append("<th>BUQUE</th>");
+        sb.Append("<th>FORWARDER</th>");
+        sb.Append("<th>BL/GUIAS</th>");
+        sb.Append("<th>PESO BRUTO</th>");
+        sb.Append("<th>CONTENEDORES</th>");
+        sb.Append("<th>#CONTENEDOR</th>");
+        sb.Append("<th>TIPO DE CONTENEDOR</th>");
+        sb.Append("<th>FECHA NOTIFICACION</th>");
+        sb.Append("<th>PREVIO</th>");
+        sb.Append("<th>TERMINAL</th>");
+        sb.Append("<th>PEDIMENTO</th>");
+        sb.Append("<th>FECHA PAGO DE PEDIMENTO</th>");
+        sb.Append("<th>FECHA DE PROG DESPACHO</th>");
+        sb.Append("<th>TIPO MOD</th>");
+        sb.Append("<th>FECHA FIN MOD</th>");
+        sb.Append("<th>ENVIO DE DOCUMENTOS</th>");
+        sb.Append("<th>F.E. PLANTA FINAL</th>");
+        sb.Append("<th>FECHA DE VACIO</th>");
+        sb.Append("<th>ENVIO CUENTA DE GASTOS</th>");
+        sb.Append("</tr>");
+        sb.Append("<tfoot>");
+        //sb.Append("</table>");
+        string Tablaweb = sb.ToString();
+        //string Tablaweb = "<table><thead><tr><th>Nombre</th></tr></thead><tbody><tr><td>Miguel</td></tr></tbody></table>";
+
+        return Tablaweb;
+
+
+
+    }
+}
+@{ tabla = fillgrid();}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+<div class="row">
+
+    <table id="example2" class="table table-bordered table-hover"> @Html.Raw(@tabla)  </table>
+
+</div>
+<script>
+    $(function () {
+
+        $('#example2').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        })
+    })
+</script>
+
+<p>Use this area to provide additional information.</p>
+<script>
+    $(function () {
+
+        $('#example2').DataTable({
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        })
+    })
+</script>
